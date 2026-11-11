@@ -428,6 +428,9 @@ label.lab{font-weight:800}
     </div>
 
     <div class="stations-list" id="slist" aria-label="Alle Stationen"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn sec" id="reset" type="button">Von vorn beginnen</button></div>
+    <div class="card" id="reset-box" hidden><p class="qbig" style="font-size:18px">Wirklich von vorn beginnen?</p><p class="note">Dein Name, alle Antworten und alle Mosaiksteine auf diesem iPad werden gelöscht. Hast du deine PDF schon gespeichert?</p>
+      <div class="row"><button class="btn big" id="reset-yes" type="button">Ja, alles löschen</button><button class="btn sec" id="reset-no" type="button">Abbrechen</button></div></div>
   </section>
 
   <!-- START -->
@@ -670,6 +673,8 @@ label.lab{font-weight:800}
   const blank={name:"",quiz:{},quizFirst:{},a:{},chk:{},first:{},read:{},done:{},step:{}};
   let S=JSON.parse(JSON.stringify(blank));
   try{const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(S,JSON.parse(raw));}catch(e){}
+  // Zurücksetzen über die Adresse …/#neu
+  if(location.hash==="#neu"){ try{localStorage.removeItem(KEY)}catch(e){} S=JSON.parse(JSON.stringify(blank)); try{history.replaceState(null,"",location.pathname+location.search)}catch(e){} }
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
   const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
   const long=t=>(t||"").trim().length>=25;
@@ -1206,6 +1211,10 @@ label.lab{font-weight:800}
       btn.disabled=false;
     };
   }
+
+  document.getElementById('reset').onclick=()=>{document.getElementById('reset-box').hidden=false;document.getElementById('reset-box').scrollIntoView({behavior:"smooth",block:"center"})};
+  document.getElementById('reset-no').onclick=()=>{document.getElementById('reset-box').hidden=true};
+  document.getElementById('reset-yes').onclick=()=>{ try{localStorage.removeItem(KEY)}catch(e){} S=JSON.parse(JSON.stringify(blank)); lastTotal=null; document.getElementById('reset-box').hidden=true; home(); toast("Alles zurückgesetzt – viel Spaß beim neuen Start!"); };
 
   home();
 })();
